@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatbot</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .chat-box {
+            border: 1px solid #ddd;
+            padding: 10px;
+            width: 400px;
+            height: 400px;
+            overflow-y: auto;
+            margin-bottom: 20px;
+        }
+        .chat {
+            margin: 5px 0;
+        }
+        .user {
+            color: green;
+        }
+        .bot {
+            color: blue;
+        }
+    </style>
+</head>
+<body>
+    <h1>Chat with the Mental Health Bot</h1>
+    <div class="chat-box" id="chat-box"></div>
+    
+    <form id="chat-form">
+        <label for="message">You:</label>
+        <input type="text" id="message" name="message" required>
+        <button type="submit">Send</button>
+    </form>
+
+    <script>
+        document.getElementById('chat-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            let message = document.getElementById('message').value;
+            let chatBox = document.getElementById('chat-box');
+
+            // Display user message
+            let userChat = document.createElement('p');
+            userChat.className = 'chat user';
+            userChat.textContent = 'You: ' + message;
+            chatBox.appendChild(userChat);
+
+            // Clear input field
+            document.getElementById('message').value = '';
+
+            // Send message to the server
+            fetch('/chat', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({message: message}),
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Display bot response
+                let botChat = document.createElement('p');
+                botChat.className = 'chat bot';
+                botChat.textContent = 'Bot: ' + data.response;
+                chatBox.appendChild(botChat);
+
+                // Scroll chat to the bottom
+                chatBox.scrollTop = chatBox.scrollHeight;
+            });
+        });
+    </script>
+</body>
+</html>
